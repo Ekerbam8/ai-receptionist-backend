@@ -28,3 +28,4 @@ async def chat_with_ai(request: MessageRequest):
 @app.get("/")
 async def root():
     return {"status": "AI Receptionist API running"}
+    
