@@ -1,6 +1,14 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
 from openai import OpenAI
+import os
 
-client = OpenAI()
+app = FastAPI()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+class MessageRequest(BaseModel):
+    message: str
 
 @app.post("/chat")
 async def chat_with_ai(request: MessageRequest):
@@ -16,3 +24,7 @@ async def chat_with_ai(request: MessageRequest):
         return {"reply": reply}
     except Exception as e:
         return {"error": str(e)}
+
+@app.get("/")
+async def root():
+    return {"status": "AI Receptionist API running"}
