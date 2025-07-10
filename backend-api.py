@@ -1,17 +1,19 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import openai
 import os
+from openai import OpenAI
+from fastapi.middleware.cors import CORSMiddleware
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Set up client with your OpenAI API key
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 app = FastAPI()
 
-# 👇 Add CORS middleware
+# Allow CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://receptionistchat.vercel.app"],
+    allow_origins=["*"],  # Replace "*" with your frontend URL for production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,7 +25,7 @@ class MessageRequest(BaseModel):
 @app.post("/chat")
 async def chat_with_ai(request: MessageRequest):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are an AI receptionist."},
